@@ -11,13 +11,13 @@ export function ServiceList(){
     const { items, loading, error } = useSelector((state) => state.serviceList);
     const dispatch = useDispatch();
 
-    const handleRemove = (id) => {
-      dispatch(removeService(id));
-    };
-
     useEffect(() => {
        dispatch(fetchServices());
     }, [dispatch]);
+
+    const handleRemove = (id) => {
+      dispatch(removeService(id));
+    };
 
     if (loading) {
         return (<div className="loader"></div>);
