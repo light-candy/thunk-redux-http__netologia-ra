@@ -44,80 +44,62 @@ export function fetchServiceRequest() {
 export function fetchServiceSuccess(item) {
     return { type: FETCH_SERVICE_SUCCESS, payload: { item } };
 }
-export function fetchServiceFailure(err) {
-    return { type: FETCH_SERVICE_FAILURE, payload: { err } };
+export function fetchServiceFailure(error) {
+    return { type: FETCH_SERVICE_FAILURE, payload: { error } };
 }
-export function removeServiceRequest() {
-    return { type: REMOVE_SERVICE_REQUEST };
+export function removeServiceRequest(id) {
+  return { type: REMOVE_SERVICE_REQUEST, payload: { id} };
 }
-export function removeServiceSuccess() {
-    return { type: REMOVE_SERVICE_SUCCESS };
+export function removeServiceSuccess(id) {
+  return { type: REMOVE_SERVICE_SUCCESS, payload: { id } };
 }
-export function removeServiceFailure(Err) {
-    return { type: REMOVE_SERVICE_FAILURE, payload: { Err } };
+export function removeServiceFailure(error, id) {
+    return { type: REMOVE_SERVICE_FAILURE, payload: { error, id } };
 }
 
 
 export const fetchServices = () => async(dispatch) => {
-          dispatch(fetchServicesRequest());
-          try {
-            const response = await fetch('http://localhost:7070/api/services');
-            if (!response.ok) {
-               throw new Error(response.statusText);
-            }
-            const services = await response.json();
-            dispatch(fetchServicesSuccess(services));
-          } catch(error) {
-              dispatch(fetchServicesFailure(error.message));
-          }
+  dispatch(fetchServicesRequest());
+    try {
+      const response = await fetch('http://localhost:7070/api/services');
+      if (!response.ok) {
+          throw new Error(response.statusText);
+      }
+      const services = await response.json();
+      dispatch(fetchServicesSuccess(services));
+    } catch(error) {
+        dispatch(fetchServicesFailure(error.message));
+    }
 };
 
-export const saveService = (item) => async(dispatch) => {
-          dispatch(saveServiceRequest());
-          try {
-            const response = await fetch(`http://localhost:7070/api/services`, {
-              method: 'POST',
-              headers: {
-                  'Content-type': 'application/json'
-              },
-              body: JSON.stringify(item)
-            });
-            if (!response.ok) {
-               throw new Error(response.statusText);
-            }
-            dispatch(saveServiceSuccess());
-          } catch(error) {
-               dispatch(saveServiceFailure(error.message));
-          }
-          dispatch(fetchServices());
-};
 
 export const fetchService = (id) => async(dispatch) => {
-      dispatch(fetchServiceRequest());
-      try {
-        const response = await fetch(`http://localhost:7070/api/services/${id}`);
-        if (!response.ok) {
-            throw new Error(response.statusText);
-        }
-        const service = await response.json();
-        dispatch(fetchServiceSuccess(service));
-      } catch(error) {
-         dispatch(fetchServiceFailure(error.message));
+    dispatch(fetchServiceRequest());
+    try {
+      const response = await fetch(`http://localhost:7070/api/services/${id}`);
+      if (!response.ok) {
+          throw new Error(response.statusText);
       }
+      const service = await response.json();
+      dispatch(fetchServiceSuccess(service));
+    } catch(error) {
+        dispatch(fetchServiceFailure(error.message));
+    }
 };
 
 export const removeService = (id) => async (dispatch) => {
-              dispatch(removeServiceRequest());
-              try {
-                const response = await fetch(`http://localhost:7070/api/services/${id}`, {
-                  method: 'DELETE'
-                });
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
-                dispatch(removeServiceSuccess());
-              } catch(error) {
-                  dispatch(removeServiceFailure(error.message));
-              }
-              dispatch(fetchServices());
+    dispatch(removeServiceRequest(id));
+    try {
+      const response = await fetch(`http://localhost:7070/api/services/${id}`, {
+       method: 'DELETE'
+      });
+      if (!response.ok) {
+          throw new Error(response.statusText);
+      }
+      dispatch(removeServiceSuccess(id));
+      dispatch(fetchServices());
+    } catch(error) {
+        dispatch(removeServiceFailure(error.message, id));
+    }
+
 };

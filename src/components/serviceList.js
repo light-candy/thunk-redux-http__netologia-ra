@@ -28,21 +28,25 @@ export function ServiceList(){
    
     return(
         <ul>
-         {items.map(({ id, name, price }) => (
-         <li key={id}>
-           {`${name} ${price}`}
+         {items.map((item) => (
+             <li key={item.id}>
+           {`${item.name} ${item.price}`}
+           {item.loading ?
+           <button className="button" disabled>
+             <div className="loader_button"></div>
+           </button> :
            <div>
-             <Link to={`/services/${id}`} className="button button_list">
+             <Link to={`/services/${item.id}`} className="button button_list">
                <span className="material-icons">
                  create
                </span>
              </Link>
-             <button onClick={() => handleRemove(id)} className="button button_list">
+             <button onClick={() => handleRemove(item.id)} className="button button_list">
                <span className="material-icons">
                  close
                </span>
              </button>
-           </div>
+           </div>}
          </li>
          ))}
         </ul>

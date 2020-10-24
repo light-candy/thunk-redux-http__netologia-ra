@@ -2,7 +2,9 @@ import React, { useCallback, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { changeServiceField,
-         saveService,
+         saveServiceRequest,
+         saveServiceSuccess,
+         saveServiceFailure,
          fetchService,
        } from '../actions/actionCreators';
 
@@ -21,6 +23,26 @@ export function ServiceEdit() {
   },
   [dispatch, id]);
 
+  const saveService = (item) => async(dispatch) => {
+          dispatch(saveServiceRequest());
+          try {
+            const response = await fetch(`http://localhost:7070/api/services`, {
+              method: 'POST',
+              headers: {
+                  'Content-type': 'application/json'
+              },
+              body: JSON.stringify(item)
+            });
+            if (!response.ok) {
+               throw new Error(response.statusText);
+            }
+            dispatch(saveServiceSuccess());
+            history.replace("/services");
+          } catch(error) {
+              dispatch(saveServiceFailure(error.message));
+          }
+  };
+
   const handleChange = useCallback(
         (event) => {
             const { name, value } = event.target;
@@ -29,16 +51,12 @@ export function ServiceEdit() {
         [dispatch]
   );
 
-  const handleSubmit = useCallback(
-         async (event) => {
+  const handleSubmit = (event) => {
             event.preventDefault();
             dispatch(saveService(item));
-            history.replace("/services");
-           },
-        [item, dispatch, history]
-  );
+          };
 
-if (loading) {
+  if (loading) {
       return (<div className="loader"></div>);
   };
   if (error) {
